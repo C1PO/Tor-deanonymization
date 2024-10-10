@@ -1,0 +1,5 @@
+# Usa l'immagine ufficiale di Nginx
+FROM nginx:alpine
+
+# Copia il file HTML nella directory predefinita di Nginx
+COPY index.html /usr/share/nginx/html/index.html
