@@ -1,46 +1,29 @@
+import numpy as np
 import pickle
-import numpy as np
-
-
-all_runs={'8872':'192.168.122.117','8802':'192.168.122.117','8873':'192.168.122.67','8803':'192.168.122.67',
-         '8874':'192.168.122.113','8804':'192.168.122.113','8875':'192.168.122.120',
-        '8876':'192.168.122.30','8877':'192.168.122.208','8878':'192.168.122.58'}
-flow_size=500
-dataset=[]
-
-for name in all_runs:
-    with open(f'./data/{name}_tordata500.pickle', 'rb') as file:
-        dataset+= pickle.load(file)
-
-
-len_tr=len(dataset)
-train_ratio=float(len_tr-600)/float(len_tr)
-rr= list(range(len(dataset)))
-np.random.shuffle(rr)
-
-train_index=rr[:int(len_tr*train_ratio)]
-test_index= rr[int(len_tr*train_ratio):]
-pickle.dump(test_index,open('test_index300.pickle','wb'))
-
-negative_samples=199
-
-import numpy as np
 import tqdm
+from sklearn.model_selection import train_test_split
 
-def generate_data():
-    global dataset
-    global train_index
-    global test_index
-    global flow_size
-    global negative_samples
 
+def generate_indices(dataset_size, test_size=0.2, random_state=42):
+    indices = np.arange(dataset_size)
+    train_index, test_index = train_test_split(indices, test_size=test_size, random_state=random_state)
+    return train_index, test_index
+
+def load_dataset(name):
+    dataset = []
+    file_path = f'./data/{name}_tordata500.pickle'
+    with open(file_path, 'rb') as file:
+        dataset = pickle.load(file)
+    return dataset
+
+def generate_train_data(dataset, train_index, flow_size=500, negative_samples=199):
     all_samples = len(train_index)
     
     labels = np.zeros((all_samples * (negative_samples + 1), 1))
     l2s = np.zeros((all_samples * (negative_samples + 1), 8, flow_size, 1))
 
     index = 0
-    random_ordering=[]+train_index
+    random_ordering = train_index.copy()
 
     for i in tqdm.tqdm(train_index):
         # Fill in the positive sample
@@ -53,7 +36,7 @@ def generate_data():
         l2s[index, 6, :, 0] = np.array(dataset[i]['there'][1]['<-'][:flow_size]) / 1000.0
         l2s[index, 7, :, 0] = np.array(dataset[i]['here'][1]['->'][:flow_size]) / 1000.0
         
-        labels[index,0]=1
+        labels[index, 0] = 1
         index += 1
         
         # Generate negative samples
@@ -61,7 +44,7 @@ def generate_data():
         m = 0
         
         for idx in random_ordering:
-            if idx == i or m >= (negative_samples-1):
+            if idx == i or m >= negative_samples:
                 continue
             
             m += 1
@@ -79,23 +62,23 @@ def generate_data():
             index += 1
 
     # Prepare test data
-    index_hard=0
-    num_hard_test = 0
+    
+    return l2s, labels
+
+def generate_test_data(dataset, test_index, flow_size=500, negative_samples=199):
     l2s_test = np.zeros((len(test_index) * (negative_samples + 1), 8, flow_size, 1))
     labels_test = np.zeros((len(test_index) * (negative_samples + 1)))
-    l2s_test_hard=np.zeros((num_hard_test*num_hard_test,2,flow_size,1))
 
     index = 0
-    random_test=[]+test_index
+    random_test = test_index.copy()
 
     for i in tqdm.tqdm(test_index):
-
         m = 0
         
         # Generate negative samples for test data
         np.random.shuffle(random_test)
         for idx in random_test:
-            if idx == i or m > (negative_samples-1):
+            if idx == i or m >= negative_samples:
                 continue
             
             m += 1
@@ -124,5 +107,8 @@ def generate_data():
         
         labels_test[index] = 1  # Positive sample
         index += 1
+    return l2s_test, labels_test
 
-    return l2s, labels, l2s_test, labels_test
+
+
+
