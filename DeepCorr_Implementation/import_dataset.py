@@ -1,11 +1,10 @@
 import pickle
 import numpy as np
-
+import tqdm
 
 all_runs={'8872':'192.168.122.117','8802':'192.168.122.117','8873':'192.168.122.67','8803':'192.168.122.67',
          '8874':'192.168.122.113','8804':'192.168.122.113','8875':'192.168.122.120',
         '8876':'192.168.122.30','8877':'192.168.122.208','8878':'192.168.122.58'}
-flow_size=500
 dataset=[]
 
 for name in all_runs:
@@ -14,25 +13,16 @@ for name in all_runs:
 
 
 len_tr=len(dataset)
-train_ratio=float(len_tr-600)/float(len_tr)
+train_ratio=0.7
 rr= list(range(len(dataset)))
 np.random.shuffle(rr)
 
 train_index=rr[:int(len_tr*train_ratio)]
 test_index= rr[int(len_tr*train_ratio):]
-pickle.dump(test_index,open('test_index300.pickle','wb'))
+#pickle.dump(test_index,open('test_index300.pickle','wb'))
 
-negative_samples=199
 
-import numpy as np
-import tqdm
-
-def generate_data():
-    global dataset
-    global train_index
-    global test_index
-    global flow_size
-    global negative_samples
+def generate_train_data(dataset=dataset,train_index=train_index,flow_size=500,negative_samples=500):
 
     all_samples = len(train_index)
     
@@ -61,11 +51,11 @@ def generate_data():
         m = 0
         
         for idx in random_ordering:
-            if idx == i or m >= (negative_samples-1):
+            if  m > (negative_samples-1):
+                break
+            if idx == i:
                 continue
-            
             m += 1
-            
             l2s[index, 0, :, 0] = np.array(dataset[idx]['here'][0]['<-'][:flow_size]) * 1000.0
             l2s[index, 1, :, 0] = np.array(dataset[i]['there'][0]['->'][:flow_size]) * 1000.0
             l2s[index, 2, :, 0] = np.array(dataset[i]['there'][0]['<-'][:flow_size]) * 1000.0
@@ -77,13 +67,13 @@ def generate_data():
             
             labels[index, 0] = 0  # Negative sample
             index += 1
-
+    return l2s, labels
+def generate_test_data(dataset=dataset,test_index=test_index,flow_size=500,negative_samples=500):
     # Prepare test data
     index_hard=0
     num_hard_test = 0
     l2s_test = np.zeros((len(test_index) * (negative_samples + 1), 8, flow_size, 1))
     labels_test = np.zeros((len(test_index) * (negative_samples + 1)))
-    l2s_test_hard=np.zeros((num_hard_test*num_hard_test,2,flow_size,1))
 
     index = 0
     random_test=[]+test_index
@@ -125,4 +115,4 @@ def generate_data():
         labels_test[index] = 1  # Positive sample
         index += 1
 
-    return l2s, labels, l2s_test, labels_test
+    return  l2s_test, labels_test
