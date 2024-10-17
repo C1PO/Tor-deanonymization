@@ -84,7 +84,9 @@ for start in range(0, all_samples, portion_size):
 
     batch_size = 8
     epochs = 2
+    '''
     history = model.fit(l2s, labels, 
                         batch_size=batch_size, 
                         epochs=epochs)
+    '''
 print("fatto")
