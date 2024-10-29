@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Session Tracker</title>
+    <script>
+        let userIp = '';
+        async function fetchUserIp() {
+            try {
+                const response = await fetch('/get-ip');
+                const data = await response.json();
+                userIp = data.ip;
+                console.log('User IP:', userIp);
+            } catch (error) {
+                console.error('Error on:', error);
+            }
+        }
+        function sendFocusData(type) {
+            if (userIp) {
+                fetch('/track-focus', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ 
+                        ip: userIp, 
+                        timestamp: new Date().toISOString(), 
+                        status: type
+                    })
+                }).then(response => {
+                    if (response.ok) {
+                        console.log(`Event "${type}" sent to the server`);
+                    } else {
+                        console.error(`Error on the event "${type}"`);
+                    }
+                });
+            }
+        }
+        window.addEventListener('focus', () => sendFocusData('focus'));
+        window.addEventListener('blur', () => sendFocusData('blur'));
+        window.addEventListener('load', fetchUserIp);
+    </script>
+    
+</head>
+<body>
+    <h1>Tracking Mouse and IP</h1>
+    <p>Move the mouse and look at the console for location logs. When the page is in focus, it sends the IP to the server.</p>
+</body>
+</html>
