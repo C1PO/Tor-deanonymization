@@ -22,13 +22,19 @@ def load_sequence(csv_path, sequence_length, feature_cols):
 entry_files = sorted([os.path.join('entry', f) for f in os.listdir('entry') if f.endswith('.csv')])
 exit_files = sorted([os.path.join('exit', f) for f in os.listdir('exit') if f.endswith('.csv')])
 
+#print("entry file: ", entry_files)
+#print("exit file: ", exit_files)
+
 # Calcola la sequence_length come la lunghezza del file più piccolo - 1
-min_sequence_length = min([pd.read_csv(f).shape[0] for f in entry_files + exit_files])
+min_sequence_length = min(sum(1 for row in f) for f in entry_files + exit_files)
 print("Sequence length impostata a:", min_sequence_length)
 
 # Prepara i dati
 entry_sequences = [load_sequence(f, min_sequence_length, feature_cols) for f in entry_files]
 exit_sequences = [load_sequence(f, min_sequence_length, feature_cols) for f in exit_files]
+
+#print("entry-seq: ", len(entry_sequences))
+#print("exit-seq: ", len(exit_sequences))
 
 # Genera le coppie di sequenze e le rispettive etichette
 pairs = []
@@ -45,6 +51,10 @@ for (pippo,poppo) in itertools.product(entry_files, exit_files):
         csv_zero.append((pippo,poppo))
 entry_zero = [load_sequence(f[0], min_sequence_length, feature_cols) for f in csv_zero]
 exit_zero = [load_sequence(f[1], min_sequence_length, feature_cols) for f in csv_zero]
+
+print("coppie: ", len(csv_pairs))
+
+
 
 
 for i in range(len(entry_sequences)):

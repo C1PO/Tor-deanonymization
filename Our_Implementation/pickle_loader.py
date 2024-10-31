@@ -8,8 +8,9 @@ with open('dataset.pickle', 'rb') as f:
 print("Numero totale di coppie:", len(dataset['pairs']))
 print("Numero totale di etichette:", len(dataset['labels']))
 
+
 # Stampa alcune coppie e le rispettive etichette
-for i in range(min(5, len(dataset['pairs']))):  # Stampa le prime 5 coppie
+for i in range(len(dataset['pairs'])): 
     entry_seq, exit_seq = dataset['pairs'][i]
     label = dataset['labels'][i]
     
@@ -19,3 +20,4 @@ for i in range(min(5, len(dataset['pairs']))):  # Stampa le prime 5 coppie
     print("Exit Sequence:")
     print(exit_seq)
     print("Etichetta:", label)
+    print(i)
