@@ -45,10 +45,15 @@ labels = []
 for i in range (len(entry_files)):
     csv_pairs.append((entry_files[i],exit_files[i]))
     csv_uno.append((entry_files[i],exit_files[i]))
+    #print(i)
+
+tmp=0
 for (pippo,poppo) in itertools.product(entry_files, exit_files):
     if (pippo,poppo) not in csv_pairs:
         csv_pairs.append((pippo,poppo))
         csv_zero.append((pippo,poppo))
+    print(tmp)
+    tmp+=1
 entry_zero = [load_sequence(f[0], min_sequence_length, feature_cols) for f in csv_zero]
 exit_zero = [load_sequence(f[1], min_sequence_length, feature_cols) for f in csv_zero]
 

@@ -1,11 +1,11 @@
 import tensorflow as tf
 from tensorflow.keras import layers
 from tensorflow.keras.layers import Flatten, Dense, Concatenate
-
 from tensorflow.keras.models import Model
 from tensorflow.keras.optimizers import Adam
 import numpy as np
 import pickle
+from sklearn.model_selection import train_test_split
 
 # Funzione per caricare il dataset
 def load_dataset(filename):
@@ -54,7 +54,7 @@ def model_cnn_lstm(input_shape, dropout_keep_prob):
     cnn_model = Model(inputs=inputs, outputs=outputs)
     
     # Aggiunta del layer LSTM
-    lstm_input_shape = (13, 5)  # Dimensione temporale, dimensione delle features
+    lstm_input_shape = (18, 5)  # Dimensione temporale, dimensione delle features
     lstm_input = layers.Input(shape=lstm_input_shape)
     lstm_output = layers.LSTM(64)(lstm_input)
     
@@ -72,6 +72,10 @@ pairs, labels = load_dataset('dataset.pickle')
 pairs = pairs.astype(np.float32)
 labels = labels.astype(np.float32)
 
+# Dividi il dataset in train (70%), validation (10%) e test (20%)
+pairs_train, pairs_temp, labels_train, labels_temp = train_test_split(pairs, labels, test_size=0.3, random_state=42)
+pairs_val, pairs_test, labels_val, labels_test = train_test_split(pairs_temp, labels_temp, test_size=2/3, random_state=42)
+
 # Parametri del modello
 sequence_length = pairs[0][0].shape[0]
 feature_count = pairs[0][0].shape[1]
@@ -87,11 +91,23 @@ model = model_cnn_lstm(input_shape, dropout_keep_prob)
 model.compile(optimizer=Adam(learning_rate), loss="binary_crossentropy", metrics=["accuracy"])
 
 # Prepara i dati di input
-entry_sequences = np.array([pair[0] for pair in pairs])
-exit_sequences = np.array([pair[1] for pair in pairs])
+entry_sequences_train = np.array([pair[0] for pair in pairs_train])
+exit_sequences_train = np.array([pair[1] for pair in pairs_train])
+
+entry_sequences_val = np.array([pair[0] for pair in pairs_val])
+exit_sequences_val = np.array([pair[1] for pair in pairs_val])
+
+entry_sequences_test = np.array([pair[0] for pair in pairs_test])
+exit_sequences_test = np.array([pair[1] for pair in pairs_test])
 
 # Allena il modello
-model.fit([entry_sequences, exit_sequences], labels, batch_size=16, epochs=10)
+model.fit([entry_sequences_train, exit_sequences_train], labels_train, 
+          validation_data=([entry_sequences_val, exit_sequences_val], labels_val),
+          batch_size=16, epochs=10)
+
+# Valuta il modello sul test set
+test_loss, test_accuracy = model.evaluate([entry_sequences_test, exit_sequences_test], labels_test)
+print(f"Test Loss: {test_loss}, Test Accuracy: {test_accuracy}")
 
 # Salva il modello
 model.save("siamese_model.h5")
