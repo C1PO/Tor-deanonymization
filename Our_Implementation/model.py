@@ -7,7 +7,7 @@ from sklearn.model_selection import train_test_split
 import numpy as np
 import pickle
 
-'''
+
 # Verifica se ci sono GPU disponibili
 gpus = tf.config.list_physical_devices('GPU')
 if gpus:
@@ -21,7 +21,7 @@ if gpus:
         except RuntimeError as e:
             print(e)
 else:
-    print("Nessuna GPU trovata. Assicurati che i driver siano correttamente installati.")'''
+    print("Nessuna GPU trovata. Assicurati che i driver siano correttamente installati.")
 
 
 
