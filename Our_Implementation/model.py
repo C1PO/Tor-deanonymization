@@ -7,21 +7,9 @@ from sklearn.model_selection import train_test_split
 import numpy as np
 import pickle
 
+from tensorflow.python.client import device_lib
+print(device_lib.list_local_devices())
 
-# Verifica se ci sono GPU disponibili
-gpus = tf.config.list_physical_devices('GPU')
-if gpus:
-    print(f"Numero di GPU disponibili: {len(gpus)}")
-    for gpu in gpus:
-        print("Nome GPU:", gpu.name)
-        
-        # Opzionalmente, imposta la GPU per limitare la memoria utilizzata
-        try:
-            tf.config.experimental.set_memory_growth(gpu, True)
-        except RuntimeError as e:
-            print(e)
-else:
-    print("Nessuna GPU trovata. Assicurati che i driver siano correttamente installati.")
 
 
 
