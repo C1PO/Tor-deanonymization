@@ -1,4 +1,4 @@
-
+# Permette di creare una porta randome per il servizio Tor sovrascrivendo il torrc
 TORRC_FILE="/etc/tor/torrc"
 
 if [ ! -f "$TORRC_FILE" ]; then

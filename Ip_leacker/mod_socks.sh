@@ -1,3 +1,4 @@
+# Attacco provava a fare una richiesta socks5 su qualsiasi porta aperta per scoprire quella di tor
 SOCKS_PORT=1024
 while true; do
     if ss -tulnp | grep -q ":$SOCKS_PORT"; then
