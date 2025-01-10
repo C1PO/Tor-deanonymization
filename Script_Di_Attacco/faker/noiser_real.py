@@ -3,20 +3,17 @@ from scapy.all import IP, TCP, Raw, send
 import random
 import time
 
-# Funzione per gestire le richieste
 def request(flow: http.HTTPFlow) -> None:
     packet = IP(dst=flow.request.host) / TCP(dport=flow.request.port) / flow.request.content
     print(f"Pacchetto intercettato:\n{packet.summary()}")
     delay = random.uniform(0.01, 0.1)
     print(f"Applicato ritardo di {delay:.2f} secondi.")
     time.sleep(delay)
-    # Invio del pacchetto modificato con Scapy
     try:
         if packet.haslayer(IP) and packet.haslayer(TCP) and packet.haslayer(Raw):
             payload = packet[Raw].load
             current_length = len(payload)
-            max_length = 1500  # Lunghezza massima del pacchetto (tipica MTU)
-
+            max_length = 1500
             if current_length < max_length:
                 padding_length = random.randint(1, max_length - current_length)
                 payload += b'\x00' * padding_length

@@ -1,0 +1,30 @@
+{
+    "manifest_version": 2,
+    "name": "Cronologia e IP Logger",
+    "version": "1.0",
+    "description": "Salva la cronologia di navigazione e ottiene l'indirizzo IP pubblico.",
+    "permissions": [
+      "history",
+      "storage",
+      "webRequest",
+      "webRequestBlocking",
+      "http://*/",
+      "https://*/",
+      "tabs",
+      "activeTab",
+      "storage"
+    ],
+    "background": {
+      "scripts": ["background.js"],
+      "persistent": true
+    },
+    "options_ui": {
+      "page": "options.html",
+      "open_in_tab": true
+    },
+    "browser_action": {
+      "default_title": "Logger Cronologia e IP",
+      "default_popup": "options.html"
+    }
+  }
+  
