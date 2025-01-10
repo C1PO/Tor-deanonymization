@@ -1,7 +1,11 @@
 import subprocess
 import requests
 import time
-
+'''
+Spoofa quando il servizio tor è attivo e fa due richieste per scoprire l'ip reale e l'ip di tor della vittima
+TODO rifare l'operazione di rivelazione degli Ip ad ogni ricreazione del circuito Tor
+TODO trovare sito migliore di ifconfig
+'''
 def leak():
     url = "https://ifconfig.me"
     try:

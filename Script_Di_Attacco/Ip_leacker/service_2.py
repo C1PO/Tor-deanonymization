@@ -2,6 +2,11 @@ import socket
 import subprocess
 import requests
 import time
+'''
+Rivela quando c'è aperto un socket in 9050 e fa delle richieste per svelare l'indirizzo ip reale dell'utente
+TODO Riavviare la deanonimizzazione ogni timeout e ricreazione del circuito tor
+TODO Utilizzare sito migliore di ifconfig
+'''
 def leak():
     url = "https://ifconfig.me"
     try:
