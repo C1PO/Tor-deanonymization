@@ -5,13 +5,12 @@ import tensorflow as tf
 #import os
 #os.environ["CUDA_VISIBLE_DEVICES"] = ""
 
-def train_model():
-    l2s, labels, l2s_test, labels_test = generate_data()
+def train_model(l2s, labels):
 
     input_shape = (8, 500,1) 
     dropout_keep_prob = 0.5
-    batch_size = 256
-    epochs = 200
+    batch_size = 8
+    epochs = 2
 
     model = model_cnn(input_shape, dropout_keep_prob)
 
@@ -22,6 +21,7 @@ def train_model():
     model.summary()
 
     
+
     history = model.fit(l2s, labels, 
                         batch_size=batch_size, 
                         epochs=epochs)
@@ -33,3 +33,4 @@ def train_model():
 
     print("faccio il train")
     model.save('model.h5')
+        print("Modello salvato!")

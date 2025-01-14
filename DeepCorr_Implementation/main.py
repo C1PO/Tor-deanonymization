@@ -1,5 +1,6 @@
 from training import *
 from test import *
+
 import tensorflow as tf
 
 
@@ -15,3 +16,9 @@ if gpus:
 
 train_model()
 #test_model()
+
+from import_dataset import *
+
+l2s, labels= generate_train_data()
+train_model(l2s, labels)
+
