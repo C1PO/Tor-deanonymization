@@ -2,8 +2,8 @@ from model import model_cnn
 from import_dataset import *
 import tensorflow as tf
 
-import os
-os.environ["CUDA_VISIBLE_DEVICES"] = ""
+#import os
+#os.environ["CUDA_VISIBLE_DEVICES"] = ""
 
 def train_model(l2s, labels):
 
@@ -19,6 +19,9 @@ def train_model(l2s, labels):
                 metrics=['accuracy'])
 
     model.summary()
+
+    
+
     history = model.fit(l2s, labels, 
                         batch_size=batch_size, 
                         epochs=epochs)
@@ -26,4 +29,8 @@ def train_model(l2s, labels):
     acc = history.history['accuracy'][-1]
     if acc > 0.8:
         model.save('model.h5')
+        print("Modello salvato!")
+
+    print("faccio il train")
+    model.save('model.h5')
         print("Modello salvato!")
